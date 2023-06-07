@@ -1,9 +1,14 @@
 package me.snowlight.domain;
 
-import org.assertj.core.api.Assertions;
+import lombok.Getter;
+import me.snowlight.domain.team.TeamDao;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.*;
 
 class SyncProcessTest {
     Sync mockSync = Mockito.mock(Sync.class);
@@ -17,12 +22,25 @@ class SyncProcessTest {
         SyncProcess syncProcess = new SyncProcess(mockSync);
         SyncResult syncResult = syncProcess.run();
         
-        Assertions.assertThat(syncResult).isEqualTo(SyncResult.FAILED);
+        assertThat(syncResult).isEqualTo(SyncResult.FAILED);
+    }
+
+    @Test
+    void toRetryData() {
+        SyncProcess syncProcess = new SyncProcess(null);
+        TeamDao team = new TeamDao(1L, "TeamA", 12);
+        RetryDate retryData = syncProcess.toRetryData(team);
+
+        assertThat(retryData).isNotNull();
+        assertThat(retryData.getId()).isEqualTo(team.getId());
+        assertThat(retryData.getName()).isEqualTo(team.getName());
+        assertThat(retryData.getMemberCount()).isEqualTo(team.getMemberCount());
+        assertThat(retryData.getCreatedAt()).isNotNull();
     }
 
     private class SyncProcess {
 
-        private Sync sync;
+        private final Sync sync;
 
         public SyncProcess(Sync sync) {
             this.sync = sync;
@@ -37,6 +55,10 @@ class SyncProcessTest {
 
             return SyncResult.SUCCESS;
         }
+
+        private RetryDate toRetryData(TeamDao team) {
+            return new RetryDate(team);
+        }
     }
 
     private enum SyncResult {
@@ -45,6 +67,25 @@ class SyncProcessTest {
 
     private class Sync {
         public void sync() {
+        }
+    }
+
+    @Getter
+    private class RetryDate {
+        private Long id;
+        private String name;
+        private Integer memberCount;
+        private LocalDateTime createdAt;
+
+        private RetryDate(Long id, String name, Integer memberCount) {
+            this.id = id;
+            this.name = name;
+            this.memberCount = memberCount;
+            this.createdAt = LocalDateTime.now();
+        }
+
+        public RetryDate(TeamDao team) {
+            this(team.getId(), team.getName(), team.getMemberCount());
         }
     }
 }
