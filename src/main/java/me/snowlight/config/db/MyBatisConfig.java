@@ -1,6 +1,6 @@
     package me.snowlight.config.db;
 
-import me.snowlight.domain.team.Team;
+import me.snowlight.domain.team.TeamDao;
 import me.snowlight.mapper.TeamMapper;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
 import org.apache.ibatis.mapping.Environment;
@@ -32,7 +32,7 @@ import java.util.Properties;
 
         try (SqlSession sqlSession = sessionFactory.openSession()) {
             TeamMapper mapper = sqlSession.getMapper(TeamMapper.class);
-            Team byId = mapper.findById(1L);
+            TeamDao byId = mapper.findById(1L);
             System.out.println(byId);
         }
     }
