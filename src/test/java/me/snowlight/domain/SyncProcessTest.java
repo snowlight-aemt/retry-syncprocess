@@ -13,21 +13,23 @@ import static org.assertj.core.api.Assertions.*;
 class SyncProcessTest {
     Sync mockSync = Mockito.mock(Sync.class);
 
+    RetryQueue mockRetryQueue = Mockito.mock(RetryQueue.class);
+
     @Test
     void sync() {
         BDDMockito
                 .willThrow(RuntimeException.class)
                 .given(mockSync).sync();
 
-        SyncProcess syncProcess = new SyncProcess(mockSync);
-        SyncResult syncResult = syncProcess.run();
+        SyncProcess syncProcess = new SyncProcess(mockSync, mockRetryQueue);
+        SyncResult syncResult = syncProcess.run(null);
         
         assertThat(syncResult).isEqualTo(SyncResult.FAILED);
     }
 
     @Test
     void toRetryData() {
-        SyncProcess syncProcess = new SyncProcess(null);
+        SyncProcess syncProcess = new SyncProcess(null, mockRetryQueue);
         TeamDao team = new TeamDao(1L, "TeamA", 12);
         RetryDate retryData = syncProcess.toRetryData(team);
 
@@ -38,18 +40,37 @@ class SyncProcessTest {
         assertThat(retryData.getCreatedAt()).isNotNull();
     }
 
+    @Test
+    void enQueue() {
+        BDDMockito
+                .willThrow(RuntimeException.class)
+                .given(mockSync).sync();
+
+        SyncProcess syncProcess = new SyncProcess(mockSync, mockRetryQueue);
+        SyncResult syncResult = syncProcess.run(null);
+
+        assertThat(syncResult).isEqualTo(SyncResult.FAILED);
+        BDDMockito
+                .verify(mockRetryQueue)
+                .enQueue(Mockito.any(RetryDate.class), Mockito.anyInt());
+    }
+
     private class SyncProcess {
 
         private final Sync sync;
+        private final RetryQueue mockRetryQueue;
 
-        public SyncProcess(Sync sync) {
+        public SyncProcess(Sync sync, RetryQueue mockRetryQueue) {
             this.sync = sync;
+            this.mockRetryQueue = mockRetryQueue;
         }
 
-        public SyncResult run() {
+        public SyncResult run(TeamDao teamA) {
             try {
                 this.sync.sync();
             } catch (RuntimeException e) {
+                RetryDate retryDate = toRetryData(new TeamDao(1L, "test", 12));
+                this.mockRetryQueue.enQueue(retryDate, 1);
                 return SyncResult.FAILED;
             }
 
@@ -86,6 +107,11 @@ class SyncProcessTest {
 
         public RetryDate(TeamDao team) {
             this(team.getId(), team.getName(), team.getMemberCount());
+        }
+    }
+
+    private class RetryQueue {
+        public void enQueue(RetryDate retryDate, int nth) {
         }
     }
 }
