@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="me.snowlight.domain.SyncProcessTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-06-06T23:55:17" hostname="I201907010-W01A" time="0.094">
+  <properties/>
+  <testcase name="sync()" classname="me.snowlight.domain.SyncProcessTest" time="0.094"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
