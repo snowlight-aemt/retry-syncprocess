@@ -10,7 +10,6 @@ import java.util.List;
 
 public class SyncRetryTest {
     Sync mockSync = Mockito.mock(Sync.class);
-//    RetryQueue mockRetryQueue = Mockito.mock(RetryQueue.class);
 
     @Test
     void retrySync() {
