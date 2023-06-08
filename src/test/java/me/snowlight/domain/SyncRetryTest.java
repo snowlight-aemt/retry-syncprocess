@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
-import java.util.List;
-
 public class SyncRetryTest {
     Sync mockSync = Mockito.mock(Sync.class);
 
@@ -43,24 +41,4 @@ public class SyncRetryTest {
         Assertions.assertThat(retryQueue.deQueAll(1)).isEmpty();
     }
 
-    private class SyncRetry {
-        private Sync sync;
-        private RetryQueue mockRetryQueue;
-
-        public SyncRetry(Sync sync, RetryQueue mockRetryQueue) {
-            this.sync = sync;
-            this.mockRetryQueue = mockRetryQueue;
-        }
-
-        public void retrySync(int nth) {
-            List<RetryDate> retryDates = this.mockRetryQueue.deQueAll(nth);
-            for (RetryDate retryDate : retryDates) {
-                try {
-                    this.sync.sync(new TeamDao(retryDate.getId(), retryDate.getName(), retryDate.getMemberCount()));
-                } catch (RuntimeException e) {
-                    this.mockRetryQueue.enQueue(retryDate, nth + 1);
-                }
-            }
-        }
-    }
 }
