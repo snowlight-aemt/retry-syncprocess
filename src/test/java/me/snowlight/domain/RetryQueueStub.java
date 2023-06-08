@@ -24,9 +24,10 @@ class RetryQueueStub implements RetryQueue {
     @Override
     public List<RetryDate> deQueAll(int nth) {
         List<RetryDate> retryDates = map.get(nth);
-        if (retryDates == null && retryDates.isEmpty())
+        if (retryDates == null || retryDates.isEmpty())
             return Collections.emptyList();
 
+        map.remove(nth);
         return retryDates;
     }
 }

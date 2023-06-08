@@ -17,9 +17,6 @@ public class SyncRetryTest {
         BDDMockito
                 .willThrow(RuntimeException.class)
                 .given(this.mockSync).sync(Mockito.any(TeamDao.class));
-//        BDDMockito
-//                .given(this.mockRetryQueue.deQueAll(1))
-//                .willReturn(List.of(new RetryDate(new TeamDao(1L, "teamA", 14))));
 
         RetryQueue retryQueue = new RetryQueueStub();
         retryQueue.enQueue(new RetryDate(new TeamDao(1L, "teamA", 14)), 1);
@@ -29,10 +26,22 @@ public class SyncRetryTest {
         syncRetry.retrySync(1);
 
         Assertions.assertThat(retryQueue.deQueAll(2)).hasSize(2);
+    }
 
-//        BDDMockito
-//                .verify(this.mockRetryQueue)
-//                .enQueue(Mockito.any(RetryDate.class), Mockito.anyInt());
+    @Test
+    void retrySync_previous() {
+        BDDMockito
+                .willThrow(RuntimeException.class)
+                .given(this.mockSync).sync(Mockito.any(TeamDao.class));
+
+        RetryQueue retryQueue = new RetryQueueStub();
+        retryQueue.enQueue(new RetryDate(new TeamDao(1L, "teamA", 14)), 1);
+        retryQueue.enQueue(new RetryDate(new TeamDao(2L, "teamB", 14)), 1);
+
+        SyncRetry syncRetry = new SyncRetry(this.mockSync, retryQueue);
+        syncRetry.retrySync(1);
+
+        Assertions.assertThat(retryQueue.deQueAll(1)).isEmpty();
     }
 
     private class SyncRetry {
