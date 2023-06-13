@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.*;
 class SyncProcessTest {
     Sync mockSync = Mockito.mock(Sync.class);
 
-    MemoryRetryQueue mockMemoryRetryQueue = Mockito.mock(MemoryRetryQueue.class);
+    RetryQueue retryQueue = Mockito.mock(RetryQueue.class);
 
     RetryQueueStub retryQueueStub = new RetryQueueStub();
     @Test
@@ -21,7 +21,7 @@ class SyncProcessTest {
                 .willThrow(RuntimeException.class)
                 .given(mockSync).sync(Mockito.any(TeamDao.class));
 
-        SyncProcess syncProcess = new SyncProcess(mockSync, mockMemoryRetryQueue);
+        SyncProcess syncProcess = new SyncProcess(mockSync, retryQueue);
         SyncResult syncResult = syncProcess.run(Mockito.mock(TeamDao.class));
         
         assertThat(syncResult).isEqualTo(SyncResult.FAILED);
@@ -29,7 +29,7 @@ class SyncProcessTest {
 
     @Test
     void toRetryData() {
-        SyncProcess syncProcess = new SyncProcess(null, mockMemoryRetryQueue);
+        SyncProcess syncProcess = new SyncProcess(null, retryQueue);
         TeamDao team = new TeamDao(1L, "TeamA", 12);
         RetryDate retryData = new RetryDate(team);
 
@@ -46,12 +46,12 @@ class SyncProcessTest {
                 .willThrow(RuntimeException.class)
                 .given(mockSync).sync(Mockito.any(TeamDao.class));
 
-        SyncProcess syncProcess = new SyncProcess(mockSync, mockMemoryRetryQueue);
+        SyncProcess syncProcess = new SyncProcess(mockSync, retryQueue);
         SyncResult syncResult = syncProcess.run(Mockito.mock(TeamDao.class));
 
         assertThat(syncResult).isEqualTo(SyncResult.FAILED);
         BDDMockito
-                .verify(mockMemoryRetryQueue)
+                .verify(retryQueue)
                 .enQueue(Mockito.any(RetryDate.class), Mockito.anyInt());
     }
 
