@@ -11,6 +11,11 @@ repositories {
 
 dependencies {
 //    compileOnly 'org.projectlombok:lombok:1.18.26'
+//    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1'
+
 
     // Database
     implementation 'com.h2database:h2:2.1.214'
