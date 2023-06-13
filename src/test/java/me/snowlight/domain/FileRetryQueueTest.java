@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FileRetryQueueTest {
     private final ObjectMapper mapper;
@@ -19,7 +21,7 @@ public class FileRetryQueueTest {
     }
 
     @Test
-    void enQueue__creating_file() throws Exception {
+    void enQueue__exists_first_files() throws Exception {
         RetryQueue fileRetryQueue = new FileRetryQueue();
         fileRetryQueue.enQueue(new RetryDate(new TeamDao(1L, "TEST C", 122)), 1);
 
@@ -40,15 +42,56 @@ public class FileRetryQueueTest {
         assertThat(retryDate.getCreatedAt()).isEqualTo(sub.getCreatedAt());
     }
 
+    @Test
+    void enQueue__exists_second_files() {
+        RetryQueue fileRetryQueue = new FileRetryQueue();
+        fileRetryQueue.enQueue(new RetryDate(new TeamDao(1L, "TEST C", 122)), 2);
+
+        boolean isRetryQueue = Files.exists(Paths.get("build/retry-second-files"));
+        assertThat(isRetryQueue).isTrue();
+    }
+
+    @Test
+    void enQueue__exists_third_files() {
+        RetryQueue fileRetryQueue = new FileRetryQueue();
+        fileRetryQueue.enQueue(new RetryDate(new TeamDao(1L, "TEST C", 122)), 3);
+
+        boolean isRetryQueue = Files.exists(Paths.get("build/retry-third-files"));
+        assertThat(isRetryQueue).isTrue();
+    }
+
+    @Test
+    void enQueue__nth_then_great_third() {
+        RetryQueue fileRetryQueue = new FileRetryQueue();
+        assertThatThrownBy(
+        () -> {
+            fileRetryQueue.enQueue(new RetryDate(new TeamDao(1L, "TEST C", 122)), 4);
+        }).isInstanceOf(RuntimeException.class);
+    }
+
     private class FileRetryQueue implements RetryQueue {
-        public static final String RETRY_FILES = "build/retry-first-files";
+        public static final String RETRY_FIRST_FILES = "build/retry-first-files";
+        public static final String RETRY_SECOND_FILES = "build/retry-second-files";
+        public static final String RETRY_THIRD_FILES = "build/retry-third-files";
 
         @Override
         public void enQueue(RetryDate retryDate, int nth) {
+            if (nth > 3) {
+                throw new RuntimeException();
+            }
+
             ObjectMapper mapper = new ObjectMapper();
 
+            String retryFiles = "";
+            if (nth == 1)
+                retryFiles = RETRY_FIRST_FILES;
+            else if (nth == 2)
+                retryFiles = RETRY_SECOND_FILES;
+            else if (nth == 3)
+                retryFiles = RETRY_THIRD_FILES;
+
             try {
-                Files.writeString(Paths.get(RETRY_FILES), mapper.writeValueAsString(retryDate));
+                Files.writeString(Paths.get(retryFiles), mapper.writeValueAsString(retryDate));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
