@@ -19,7 +19,7 @@ public class ScheduleTest {
 
         Schedule schedule = new Schedule(new SyncRetry(new Sync(), retryQueue));
 
-        schedule.run(5000, 10000, 15000);
+        schedule.run(1000, 3000, 5000);
 
         Assertions.assertThat(retryQueue.deQueAll(1)).hasSize(0);
         Assertions.assertThat(retryQueue.deQueAll(2)).hasSize(0);
