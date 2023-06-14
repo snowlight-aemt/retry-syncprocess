@@ -1,8 +1,10 @@
-package me.snowlight.domain;
+package me.snowlight.domain.sync;
 
+import me.snowlight.domain.queue.RetryData;
+import me.snowlight.domain.queue.RetryQueue;
 import me.snowlight.domain.team.TeamDao;
 
-class SyncProcess {
+public class SyncProcess {
 
     private final Sync sync;
     private final RetryQueue retryQueue;
@@ -16,15 +18,15 @@ class SyncProcess {
         try {
             this.sync.sync(team);
         } catch (RuntimeException e) {
-            RetryDate retryDate = toRetryData(team);
-            this.retryQueue.enQueue(retryDate, 1);
+            RetryData retryData = toRetryData(team);
+            this.retryQueue.enQueue(retryData, 1);
             return SyncResult.FAILED;
         }
 
         return SyncResult.SUCCESS;
     }
 
-    private RetryDate toRetryData(TeamDao team) {
-        return new RetryDate(team);
+    private RetryData toRetryData(TeamDao team) {
+        return new RetryData(team);
     }
 }

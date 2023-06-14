@@ -1,4 +1,4 @@
-package me.snowlight.domain;
+package me.snowlight.domain.queue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,7 +11,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-class FileRetryQueue implements RetryQueue {
+public class FileRetryQueue implements RetryQueue {
     public static final String RETRY_FIRST_PATH = "build/retry-first-files";
     public static final String RETRY_SECOND_PATH = "build/retry-second-files";
     public static final String RETRY_THIRD_PATH = "build/retry-third-files";
@@ -24,7 +24,7 @@ class FileRetryQueue implements RetryQueue {
     }
 
     @Override
-    public void enQueue(RetryDate retryDate, int nth) {
+    public void enQueue(RetryData retryData, int nth) {
         if (nth > 3) {
             throw new RuntimeException();
         }
@@ -34,7 +34,7 @@ class FileRetryQueue implements RetryQueue {
                                                             StandardOpenOption.CREATE,
                                                             StandardOpenOption.APPEND)) {
 
-            bufferedWriter.write(mapper.writeValueAsString(retryDate));
+            bufferedWriter.write(mapper.writeValueAsString(retryData));
             bufferedWriter.newLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -42,7 +42,7 @@ class FileRetryQueue implements RetryQueue {
     }
 
     @Override
-    public List<RetryDate> deQueAll(int nth) {
+    public List<RetryData> deQueAll(int nth) {
         if (nth > 3) {
             throw new RuntimeException();
         }
@@ -50,14 +50,14 @@ class FileRetryQueue implements RetryQueue {
         try {
             Path backUpPath = getBackUpPath(nth);
             List<String> lines = Files.readAllLines(backUpPath);
-            List<RetryDate> retryDates = new ArrayList<>();
+            List<RetryData> retryData = new ArrayList<>();
 
             for (String str : lines) {
-                retryDates.add(this.mapper.readValue(str, RetryDate.class));
+                retryData.add(this.mapper.readValue(str, RetryData.class));
             }
 
             Files.delete(backUpPath);
-            return retryDates;
+            return retryData;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

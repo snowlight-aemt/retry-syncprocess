@@ -1,6 +1,8 @@
-package me.snowlight.domain;
+package me.snowlight.domain.schedule;
 
-class Schedule {
+import me.snowlight.domain.sync.SyncRetry;
+
+public class Schedule {
     private final SyncRetry syncRetry;
 
     public Schedule(SyncRetry syncRetry) {

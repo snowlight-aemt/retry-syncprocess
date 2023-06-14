@@ -1,8 +1,8 @@
-package me.snowlight.domain;
+package me.snowlight.domain.sync;
 
 import me.snowlight.domain.team.TeamDao;
 
-class Sync {
+public class Sync {
     int cnt = 0;
     public void sync(TeamDao teamDao) {
         cnt++;

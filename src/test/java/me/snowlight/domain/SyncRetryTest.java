@@ -1,5 +1,9 @@
 package me.snowlight.domain;
 
+import me.snowlight.domain.queue.RetryData;
+import me.snowlight.domain.queue.RetryQueue;
+import me.snowlight.domain.sync.Sync;
+import me.snowlight.domain.sync.SyncRetry;
 import me.snowlight.domain.team.TeamDao;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,8 +20,8 @@ public class SyncRetryTest {
                 .given(this.mockSync).sync(Mockito.any(TeamDao.class));
 
         RetryQueue retryQueue = new RetryQueueStub();
-        retryQueue.enQueue(new RetryDate(new TeamDao(1L, "teamA", 14)), 1);
-        retryQueue.enQueue(new RetryDate(new TeamDao(2L, "teamB", 14)), 1);
+        retryQueue.enQueue(new RetryData(new TeamDao(1L, "teamA", 14)), 1);
+        retryQueue.enQueue(new RetryData(new TeamDao(2L, "teamB", 14)), 1);
 
         SyncRetry syncRetry = new SyncRetry(this.mockSync, retryQueue);
         syncRetry.retrySync(1);
@@ -32,8 +36,8 @@ public class SyncRetryTest {
                 .given(this.mockSync).sync(Mockito.any(TeamDao.class));
 
         RetryQueue retryQueue = new RetryQueueStub();
-        retryQueue.enQueue(new RetryDate(new TeamDao(1L, "teamA", 14)), 1);
-        retryQueue.enQueue(new RetryDate(new TeamDao(2L, "teamB", 14)), 1);
+        retryQueue.enQueue(new RetryData(new TeamDao(1L, "teamA", 14)), 1);
+        retryQueue.enQueue(new RetryData(new TeamDao(2L, "teamB", 14)), 1);
 
         SyncRetry syncRetry = new SyncRetry(this.mockSync, retryQueue);
         syncRetry.retrySync(1);

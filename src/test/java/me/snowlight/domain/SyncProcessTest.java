@@ -1,5 +1,10 @@
 package me.snowlight.domain;
 
+import me.snowlight.domain.queue.RetryData;
+import me.snowlight.domain.queue.RetryQueue;
+import me.snowlight.domain.sync.Sync;
+import me.snowlight.domain.sync.SyncProcess;
+import me.snowlight.domain.sync.SyncResult;
 import me.snowlight.domain.team.TeamDao;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -31,7 +36,7 @@ class SyncProcessTest {
     void toRetryData() {
         SyncProcess syncProcess = new SyncProcess(null, retryQueue);
         TeamDao team = new TeamDao(1L, "TeamA", 12);
-        RetryDate retryData = new RetryDate(team);
+        RetryData retryData = new RetryData(team);
 
         assertThat(retryData).isNotNull();
         assertThat(retryData.getId()).isEqualTo(team.getId());
@@ -52,7 +57,7 @@ class SyncProcessTest {
         assertThat(syncResult).isEqualTo(SyncResult.FAILED);
         BDDMockito
                 .verify(retryQueue)
-                .enQueue(Mockito.any(RetryDate.class), Mockito.anyInt());
+                .enQueue(Mockito.any(RetryData.class), Mockito.anyInt());
     }
 
     @Test
@@ -67,11 +72,11 @@ class SyncProcessTest {
         SyncResult syncResult = syncProcess.run(testB);
 
 
-        List<RetryDate> retryDates = this.retryQueueStub.deQueAll(1);
+        List<RetryData> retryData = this.retryQueueStub.deQueAll(1);
         assertThat(syncResult).isEqualTo(SyncResult.FAILED);
-        assertThat(retryDates.get(0).getId()).isEqualTo(testB.getId());
-        assertThat(retryDates.get(0).getName()).isEqualTo(testB.getName());
-        assertThat(retryDates.get(0).getMemberCount()).isEqualTo(testB.getMemberCount());
+        assertThat(retryData.get(0).getId()).isEqualTo(testB.getId());
+        assertThat(retryData.get(0).getName()).isEqualTo(testB.getName());
+        assertThat(retryData.get(0).getMemberCount()).isEqualTo(testB.getMemberCount());
     }
 
 }

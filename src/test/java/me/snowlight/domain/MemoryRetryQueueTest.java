@@ -1,5 +1,8 @@
 package me.snowlight.domain;
 
+import me.snowlight.domain.queue.MemoryRetryQueue;
+import me.snowlight.domain.queue.RetryData;
+import me.snowlight.domain.queue.RetryQueue;
 import me.snowlight.domain.team.TeamDao;
 import org.junit.jupiter.api.Test;
 
@@ -12,61 +15,61 @@ public class MemoryRetryQueueTest {
     void enQueueAndDequeAll() {
         RetryQueue retryQueue = new MemoryRetryQueue();
 
-        RetryDate retryDate1 = new RetryDate(new TeamDao(1L, "TeamC", 22));
-        retryQueue.enQueue(retryDate1, 1);
-        RetryDate retryDate2 = new RetryDate(new TeamDao(2L, "TeamC", 22));
-        retryQueue.enQueue(retryDate2, 1);
-        RetryDate retryDate3 = new RetryDate(new TeamDao(3L, "TeamC", 22));
-        retryQueue.enQueue(retryDate3, 1);
+        RetryData retryData1 = new RetryData(new TeamDao(1L, "TeamC", 22));
+        retryQueue.enQueue(retryData1, 1);
+        RetryData retryData2 = new RetryData(new TeamDao(2L, "TeamC", 22));
+        retryQueue.enQueue(retryData2, 1);
+        RetryData retryData3 = new RetryData(new TeamDao(3L, "TeamC", 22));
+        retryQueue.enQueue(retryData3, 1);
 
-        List<RetryDate> retryDates = retryQueue.deQueAll(1);
+        List<RetryData> retryData = retryQueue.deQueAll(1);
 
-        assertThat(retryDates).hasSize(3);
-        assertThat(retryDates).contains(retryDate1, retryDate2, retryDate3);
+        assertThat(retryData).hasSize(3);
+        assertThat(retryData).contains(retryData1, retryData2, retryData3);
     }
 
     @Test
     void enQueueAndDequeAll2() {
         RetryQueue retryQueue = new MemoryRetryQueue();
 
-        RetryDate retryDate1 = new RetryDate(new TeamDao(1L, "TeamC", 22));
-        retryQueue.enQueue(retryDate1, 2);
-        RetryDate retryDate2 = new RetryDate(new TeamDao(2L, "TeamC", 22));
-        retryQueue.enQueue(retryDate2, 2);
-        RetryDate retryDate3 = new RetryDate(new TeamDao(3L, "TeamC", 22));
-        retryQueue.enQueue(retryDate3, 2);
+        RetryData retryData1 = new RetryData(new TeamDao(1L, "TeamC", 22));
+        retryQueue.enQueue(retryData1, 2);
+        RetryData retryData2 = new RetryData(new TeamDao(2L, "TeamC", 22));
+        retryQueue.enQueue(retryData2, 2);
+        RetryData retryData3 = new RetryData(new TeamDao(3L, "TeamC", 22));
+        retryQueue.enQueue(retryData3, 2);
 
-        List<RetryDate> retryDates = retryQueue.deQueAll(2);
+        List<RetryData> retryData = retryQueue.deQueAll(2);
 
-        assertThat(retryDates).hasSize(3);
-        assertThat(retryDates).contains(retryDate1, retryDate2, retryDate3);
+        assertThat(retryData).hasSize(3);
+        assertThat(retryData).contains(retryData1, retryData2, retryData3);
     }
 
     @Test
     void dequeAll_delete_previous_queue() {
         RetryQueue retryQueue = new MemoryRetryQueue();
 
-        RetryDate retryDate1 = new RetryDate(new TeamDao(1L, "TeamC", 22));
-        retryQueue.enQueue(retryDate1, 2);
-        RetryDate retryDate2 = new RetryDate(new TeamDao(2L, "TeamC", 22));
-        retryQueue.enQueue(retryDate2, 2);
-        RetryDate retryDate3 = new RetryDate(new TeamDao(3L, "TeamC", 22));
-        retryQueue.enQueue(retryDate3, 2);
+        RetryData retryData1 = new RetryData(new TeamDao(1L, "TeamC", 22));
+        retryQueue.enQueue(retryData1, 2);
+        RetryData retryData2 = new RetryData(new TeamDao(2L, "TeamC", 22));
+        retryQueue.enQueue(retryData2, 2);
+        RetryData retryData3 = new RetryData(new TeamDao(3L, "TeamC", 22));
+        retryQueue.enQueue(retryData3, 2);
 
         retryQueue.deQueAll(2);
-        List<RetryDate> retryDates = retryQueue.deQueAll(2);
+        List<RetryData> retryData = retryQueue.deQueAll(2);
 
-        assertThat(retryDates).hasSize(0);
-        assertThat(retryDates).isEmpty();
+        assertThat(retryData).hasSize(0);
+        assertThat(retryData).isEmpty();
     }
 
     @Test
     void dequeAll_case_empty() {
         RetryQueue retryQueue = new MemoryRetryQueue();
 
-        List<RetryDate> retryDates = retryQueue.deQueAll(1);
+        List<RetryData> retryData = retryQueue.deQueAll(1);
 
-        assertThat(retryDates).isNotNull();
-        assertThat(retryDates).hasSize(0);
+        assertThat(retryData).isNotNull();
+        assertThat(retryData).hasSize(0);
     }
 }
