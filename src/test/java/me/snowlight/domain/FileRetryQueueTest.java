@@ -102,43 +102,4 @@ public class FileRetryQueueTest {
             return null;
         }
     }
-
-    //    @Test
-//    void enQueueAndDeQueAll() {
-//        RetryQueue fileRetryQueue = new FileRetryQueue();
-//
-//        RetryDate retryDate1 = new RetryDate(new TeamDao(1L, "Test C", 13));
-//        RetryDate retryDate2 = new RetryDate(new TeamDao(2L, "Test C", 13));
-//        fileRetryQueue.enQueue(retryDate1, 1);
-//        fileRetryQueue.enQueue(retryDate2, 1);
-//
-//        List<RetryDate> retryDates = fileRetryQueue.deQueAll(1);
-//
-//        assertThat(retryDates).hasSize(2);
-//        assertThat(retryDates).contains(retryDate1, retryDate2);
-//    }
-//
-//    private class FileRetryQueue implements RetryQueue {
-//        ObjectMapper objectMapper;
-//
-//        public FileRetryQueue() {
-//            this.objectMapper = new ObjectMapper();
-//        }
-//
-//        @Override
-//        public void enQueue(RetryDate retryDate, int nth) {
-//            try {
-//                String str = objectMapper.writeValueAsString(retryDate);
-//            } catch (JsonProcessingException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            Files.write(Paths.get("build/firstRetryData"), )
-//        }
-//
-//        @Override
-//        public List<RetryDate> deQueAll(int nth) {
-//            return null;
-//        }
-//    }
 }
