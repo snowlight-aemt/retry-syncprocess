@@ -18,7 +18,7 @@
 * 변경 내용을 DB 로 전달
 
 ## 상태 다이어그램
-![스크린샷 2023-06-09 오후 9 16 41](https://github.com/snowlight-aemt/retry-syncprocess/assets/82430645/7f79395b-6d33-435c-bf80-7dc0f88df6b4)
+![스크린샷 2023-06-14 오후 11 08 53](https://github.com/snowlight-aemt/retry-syncprocess/assets/82430645/c1e2e3b6-939c-431b-a103-4eca3625495d)
 
 ## 클래스 다이어그램
 ![스크린샷 2023-06-14 오후 10 42 02](https://github.com/snowlight-aemt/retry-syncprocess/assets/82430645/3a924d27-ea59-473b-82ae-103c635cf6ed)
